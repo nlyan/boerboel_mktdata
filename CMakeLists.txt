@@ -6,6 +6,8 @@ project (boerboel_mktdata
          HOMEPAGE_URL "https://www.boerboeltrading.com"
          LANGUAGES CXX)
 
+enable_testing()
+
 set (CMAKE_CXX_STANDARD 17)
 
 # Control symbol visibility
@@ -20,10 +22,15 @@ set(Boost_USE_STATIC_LIBS     ON)
 set(Boost_USE_STATIC_RUNTIME  OFF)
 find_package (Boost 1.75.0 REQUIRED)
 
+# Test framework
+#
+add_subdirectory(third_party/Catch2)
+
 # Implement the solution as a library
 #
 add_library (mktdata_lib STATIC
-    mktdata.cpp
+    best_bid_ask.cpp
+    market.cpp
 )
 
 set_target_properties (mktdata_lib
@@ -45,4 +52,7 @@ target_include_directories (mktdata_test
                             PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries (mktdata_test
-                       PRIVATE mktdata_lib)
+                       PRIVATE mktdata_lib
+                               Catch2WithMain)
+
+add_test (NAME mktdata COMMAND mktdata_test)

@@ -1,8 +1,5 @@
+#pragma once
 
-namespace boerboel {
+#include <boerboel/best_bid_ask.hpp>
+#include <boerboel/market.hpp>
 
-void
-on_market_data (char const* data);
-
-
-} // namespace boerboel
