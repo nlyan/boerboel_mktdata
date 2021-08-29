@@ -6,6 +6,7 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/tag.hpp>
+#include <mutex>
 
 namespace bmi = boost::multi_index;
 
@@ -33,12 +34,14 @@ private:
             >
         >
     > bba_map_;
+    std::mutex mutable mutex_;
 };
 
 
 bool
 MarketImpl::insert_or_update (BestBidAsk const& bba)
 {
+    std::unique_lock lock {mutex_};
     auto& symbol_index = bba_map_.get<by_symbol>();
 
     auto found = symbol_index.find (bba.symbol);
@@ -56,6 +59,7 @@ std::shared_ptr<BestBidAsk>
 MarketImpl::lookup_symbol (std::string_view symbol) const
 {
     std::shared_ptr<BestBidAsk> bba;
+    std::unique_lock lock {mutex_};
     auto& symbol_index = bba_map_.get<by_symbol>();
 
     auto found = symbol_index.find (symbol.data());
